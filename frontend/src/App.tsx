@@ -3,10 +3,12 @@ import {Route, Routes} from 'react-router-dom';
 import PageNotFound from './UI/PageNotFound/PageNotFound';
 import Register from './features/users/Register';
 import Login from './features/users/Login';
+import NavBar from './UI/NavBar/NavBar';
 
 const App = () => {
   return (
     <>
+      <NavBar/>
       <Container maxWidth="lg">
         <Routes>
           <Route path="/register" element={<Register/>}/>
