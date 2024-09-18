@@ -14,6 +14,12 @@ export interface PostFields {
   datetime: Date;
 }
 
+export interface CommentFields {
+  user: mongoose.Types.ObjectId;
+  post: mongoose.Types.ObjectId;
+  text: string;
+}
+
 export interface UserMethods {
   checkPassword(password: string): Promise<boolean>;
   generateToken(): void;
