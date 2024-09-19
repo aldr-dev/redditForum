@@ -1,7 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {OnePostData, PostMutation, PostsData, ValidationError} from '../../types';
 import {RootState} from '../../app/store';
-import axios, {isAxiosError} from 'axios';
+import {isAxiosError} from 'axios';
 import axiosApi from '../../axiosApi';
 
 export const sendPostData = createAsyncThunk<void, PostMutation, {state: RootState, rejectValue: ValidationError}>(
@@ -22,7 +22,7 @@ export const sendPostData = createAsyncThunk<void, PostMutation, {state: RootSta
       formData.append('image', data.image);
     }
 
-    await axios.post<PostMutation>('/posts', formData, {headers: {'Authorization': `Bearer ${token}`}});
+    await axiosApi.post<PostMutation>('/posts', formData, {headers: {'Authorization': `Bearer ${token}`}});
   } catch (error) {
     if (isAxiosError(error) && error.response && error.response.status === 400) {
       return rejectWithValue(error.response.data);
