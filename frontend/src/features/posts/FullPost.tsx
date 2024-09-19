@@ -1,8 +1,102 @@
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import {useParams} from 'react-router-dom';
+import {useEffect} from 'react';
+import {toast} from 'react-toastify';
+import ChatIcon from '@mui/icons-material/Chat';
+import InfoIcon from '@mui/icons-material/Info';
+import {getOnePostData} from './postsThunks';
+import {getCommentsData} from '../comments/commentsThunks';
+import {selectGetFullPostLoading, selectOnePostData} from './postsSlice';
+import {Avatar, Box, CardMedia, CircularProgress, Container, Typography} from '@mui/material';
+import dayjs from 'dayjs';
+import {API_URL} from '../../config';
+import {selectUser} from '../users/usersSlice';
+
 const FullPost = () => {
+  const {id} = useParams();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
+  const onePostData = useAppSelector(selectOnePostData);
+  const loading = useAppSelector(selectGetFullPostLoading);
+
+  useEffect(() => {
+    const fetchOnePostAndDataComments = async () => {
+      if (id) {
+        try {
+          await dispatch(getOnePostData(id)).unwrap();
+          await dispatch(getCommentsData(id)).unwrap();
+        } catch (error) {
+          toast.error('Произошла непредвиденная ошибка. Повторите попытку позже.');
+          console.error('Произошла непредвиденная ошибка. Повторите попытку позже. ' + error);
+        }
+      }
+    };
+
+    void fetchOnePostAndDataComments();
+  }, [dispatch, id]);
+
   return (
-    <div>
-      FullPost
-    </div>
+    <>
+      {loading ? (
+        <CircularProgress sx={{color: '#ff4500'}}/>
+      ) : (
+        onePostData && (
+          <Container sx={{mb: 5}}>
+            <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4}}>
+              <Box sx={{display: 'flex', alignItems: 'center', fontWeight: 'bold'}}>
+                <Avatar sx={{width: 28, height: 28, mr: 1, fontWeight: 'normal'}}>
+                  {onePostData.user.username.charAt(0).toUpperCase()}
+                </Avatar>
+                {onePostData.user.username}
+              </Box>
+              <Typography variant="body1" color="text.secondary">
+                {dayjs(onePostData.datetime).format('DD.MM.YYYY HH:mm')}
+              </Typography>
+            </Box>
+
+            <Box sx={{mb: 5}}>
+              {!onePostData.image && (
+                <Typography
+                  sx={{ mb: 2 }}
+                  color="#ff4500"
+                  variant="h6"
+                  component="label"
+                  display="flex"
+                  alignItems="center">
+                  <ChatIcon sx={{ marginRight: 1 }} />
+                  Обсуждение
+                </Typography>
+              )}
+              <Typography variant="h4" sx={{mb: 2}}>
+                {onePostData.title}
+              </Typography>
+              <Typography variant="body1">{onePostData.description}</Typography>
+            </Box>
+
+            <Box sx={{mb: 5}}>
+              {onePostData.image ? (
+                <CardMedia
+                  component="img"
+                  sx={{
+                    width: '100%',
+                    height: '600px',
+                    borderRadius: 3,
+                    objectFit: 'cover',
+                  }}
+                  image={`${API_URL}/${onePostData.image}`}
+                  alt="full post image"
+                />
+              ) : null}
+            </Box>
+
+            <Typography sx={{mb: 1}} variant="h5">Комментарии:</Typography>
+            <Typography sx={{display: 'flex', alignItems: 'center',}} variant="body1">
+              {user ? null : (<><InfoIcon/>&nbsp;Комментарии могут оставлять, только зарегистрированные пользователи!</>)}
+            </Typography>
+          </Container>
+        )
+      )}
+    </>
   );
 };
 
