@@ -11,13 +11,18 @@ import {Avatar, Box, CardMedia, CircularProgress, Container, Typography} from '@
 import dayjs from 'dayjs';
 import {API_URL} from '../../config';
 import {selectUser} from '../users/usersSlice';
+import CommentForm from '../comments/components/CommentForm';
+import {selectCommentsData, selectGetCommentsLoading} from '../comments/commentsSlice';
+import CommentItem from '../comments/components/CommentItem';
 
 const FullPost = () => {
   const {id} = useParams();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
+  const commentsData = useAppSelector(selectCommentsData);
   const onePostData = useAppSelector(selectOnePostData);
   const loading = useAppSelector(selectGetFullPostLoading);
+  const loadingComments = useAppSelector(selectGetCommentsLoading);
 
   useEffect(() => {
     const fetchOnePostAndDataComments = async () => {
@@ -89,10 +94,29 @@ const FullPost = () => {
               ) : null}
             </Box>
 
-            <Typography sx={{mb: 1}} variant="h5">Комментарии:</Typography>
-            <Typography sx={{display: 'flex', alignItems: 'center',}} variant="body1">
-              {user ? null : (<><InfoIcon/>&nbsp;Комментарии могут оставлять, только зарегистрированные пользователи!</>)}
-            </Typography>
+            {!user && (
+              <Typography sx={{ display: 'flex', alignItems: 'center', mb: 3 }} variant="body1">
+                <InfoIcon />
+                &nbsp;Комментарии могут оставлять, только зарегистрированные пользователи!
+              </Typography>
+            )}
+            {user && id && (
+              <CommentForm user={user} postId={id} />
+            )}
+
+            <Typography sx={{mt: 2, mb: 2}} variant="h5">Комментарии:</Typography>
+            {loadingComments ? (<CircularProgress sx={{color: '#ff4500'}}/>) : (
+              <>
+                {commentsData.length === 0 ? (
+                  <Typography sx={{display: 'flex', alignItems: 'center'}} variant="body2" color="#000"><InfoIcon />&nbsp;В данный момент список комментариев пуст, оставьте Ваш первый комментарий.</Typography>) : (
+                  <Box>
+                    {commentsData.map((comment) => (
+                      <CommentItem key={comment._id} comment={comment}/>
+                    ))}
+                  </Box>
+                )}
+              </>
+            )}
           </Container>
         )
       )}

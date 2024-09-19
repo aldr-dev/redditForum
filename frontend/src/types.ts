@@ -19,6 +19,8 @@ export interface CommentsMutation {
   text: string;
 }
 
+export type CommentsForm = Omit<CommentsMutation, 'post'>;
+
 export interface PostsData {
   _id: string;
   user: {
