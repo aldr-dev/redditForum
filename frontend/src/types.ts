@@ -8,6 +8,33 @@ export interface LoginMutation {
   password: string;
 }
 
+export interface PostMutation {
+  title: string;
+  description: string;
+  image: File | null;
+}
+
+export interface PostsData {
+  _id: string;
+  user: {
+    username: string;
+  }
+  title: string;
+  image: string | null;
+  datetime: string;
+}
+
+export interface OnePostData {
+  _id: string;
+  user: {
+    username: string;
+  }
+  title: string;
+  description: string | null;
+  image: string | null;
+  datetime: string;
+}
+
 export interface User {
   _id: string;
   username: string;
