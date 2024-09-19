@@ -14,6 +14,11 @@ export interface PostMutation {
   image: File | null;
 }
 
+export interface CommentsMutation {
+  post: string;
+  text: string;
+}
+
 export interface PostsData {
   _id: string;
   user: {
@@ -33,6 +38,16 @@ export interface OnePostData {
   description: string | null;
   image: string | null;
   datetime: string;
+}
+
+export interface CommentsData {
+  _id: string;
+  user: {
+    _id: string;
+    username: string;
+  }
+  post: string;
+  text: string;
 }
 
 export interface User {
